@@ -83,6 +83,7 @@ const ChatBot: React.FC<Props> = ({
   // Message Sound Loading
   useEffect(() => {
     if (botOptions.messageSoundOption.src) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       messageSound = new Audio(botOptions.messageSoundOption.src)
       messageSound.volume = botOptions.messageSoundOption.volume
     }
@@ -227,8 +228,11 @@ const ChatBot: React.FC<Props> = ({
             break;
           default:
             const replyMessage = buildReplyMessage(data);
-            updateMessageData(replyMessage);
-            messageSound?.play();
+
+            if (replyMessage) {
+              updateMessageData(replyMessage);
+              messageSound?.play();
+            }
         }
         // finish
         setBotTyping(false);
@@ -259,7 +263,7 @@ const ChatBot: React.FC<Props> = ({
     return metadata;
   }
 
-  const buildReplyMessage = (data) => {
+  const buildReplyMessage = (data: any) => {
     let hintDenied = null;
     const scenarioStart = scenario[0][0]
     if (data.response?.includes('I can only provide 3 hints')) {
