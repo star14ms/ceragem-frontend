@@ -1,7 +1,6 @@
 import { combineReducers } from "redux";
 import type {} from 'redux-thunk/extend-redux' // https://github.com/reduxjs/redux-thunk/issues/333s
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { createWrapper } from "next-redux-wrapper";
 
 import {
   persistReducer,
@@ -16,16 +15,10 @@ import {
 import storage from "redux-persist/lib/storage";
 
 import { botSlice } from "./slices/botSlice";
-import { OMRSlice } from "./slices/OMRSlice";
-import { questionSlice } from "./slices/questionSlice";
-import { userSlice } from "./slices/userSlice";
 
 
 const rootReducer = combineReducers({
   [botSlice.name]: botSlice.reducer,
-  [OMRSlice.name]: OMRSlice.reducer,
-  [questionSlice.name]: questionSlice.reducer,
-  [userSlice.name]: userSlice.reducer,
 });
 
 const makeConfiguredStore = () =>
@@ -35,7 +28,7 @@ const makeConfiguredStore = () =>
   });
 
 
-const makeStore = () => {
+export const makeStore = () => {
   const isServer = typeof window === "undefined";
   if (isServer) {
     return makeConfiguredStore();
@@ -71,4 +64,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action
 >;
 
-export const wrapper = createWrapper<AppStore>(makeStore);
+const store =  makeStore()
+
+export default store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

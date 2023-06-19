@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 // import ReactChatBot, { MessageData, MessageDataOption } from 'react-chat-bot';
-import ReactChatBot, { MessageData, MessageDataOption } from 'react-chat-bot/src/react-chat-bot';
+import ReactChatBot, { MessageData, MessageDataOption } from '@/../react-chat-bot/src/react-chat-bot';
 import { useSession } from 'next-auth/react';
 import { useAxios } from '@/lib/api'
 
