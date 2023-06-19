@@ -4,7 +4,9 @@ const axios = Axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-export function useAxios(token: string = null) {
+export function useAxios(token: string | null = null) {
+    if (token === null) return axios
+
 	axios.interceptors.request.use(function (config) {
 		config.headers.Authorization = `Bearer ${token}`;
 		

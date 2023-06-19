@@ -11,8 +11,8 @@ export default function Header() {
     <nav className={`${styles.navbar} navbar header has-background-white px-3`} role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
         <Link href="/" className="navbar-item">
-          <Image src="/icons/pinata.png" alt="Pinata" width={32} height={32} priority />
-          <Image src="/icons/title/glide-28.svg" alt="Glide" width={48} height={16} priority className="ml-3" />
+          <Image src="/icons/pinata.png" alt="Pinata" width={32} height={28} />
+          <b className="ml-2">Ceragem</b>
         </Link>
 
         {/* <div className="navbar-burger">

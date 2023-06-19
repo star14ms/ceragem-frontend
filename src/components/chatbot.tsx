@@ -8,7 +8,7 @@ import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
 import { setIsOpen, setMessageData as setMessageDataRedux, addMessageData, clearMessageData } from "@/store/slices/botSlice";
-import { selectBotisOpen, selectBotMessageData } from "@/store/slices/botSlice";
+import { selectBotisOpen, selectBotMessageData, selectBotId } from "@/store/slices/botSlice";
 import styles from './chatbot.module.scss';
 
 
@@ -50,8 +50,8 @@ const ChatBot: React.FC<Props> = ({
   const dispatch = useDispatch();
   const isOpenRedux = useSelector(selectBotisOpen);
   const messageDataRedux = useSelector(selectBotMessageData);
+  const chatbot_id = useSelector(selectBotId);
 
-  const MessageUnrelated = '저는 당신의 영어 실력을 향상시키기 위해 도와주는 글라이디입니다! 당신의 학습에 도움이 되는 질문이라면 모두 답변해 드릴 수 있으니, 문제와 관련된 질문을 작성해주세요 😊';
   let messageSound: HTMLAudioElement | null
 
   const botOptions = {
@@ -129,8 +129,16 @@ const ChatBot: React.FC<Props> = ({
       return;
     }
 
-    for (let i = 0; i < scenario[_scenarioIndex].length; i++) {
+    if (scenario[_scenarioIndex][0].agent === 'bot') {
       setBotTyping(true);
+    }
+
+    for (let i = 0; i < scenario[_scenarioIndex].length; i++) {
+      if (scenario[_scenarioIndex][i].agent === 'bot') {
+        setBotTyping(true);
+      }
+      console.log(scenario[_scenarioIndex][i]);
+
       setTimeout(() => {
         const message = scenario[_scenarioIndex][i];
         updateMessageData(message);
@@ -200,32 +208,32 @@ const ChatBot: React.FC<Props> = ({
     // Loading
     setBotTyping(true);
 
-    const urls = ['https://fastcampus.co.kr/data_online_dpnlp', 'https://fastcampus.co.kr/data_online_dpnlg']
+    // const urls = ['https://fastcampus.co.kr/data_online_dpnlp', 'https://fastcampus.co.kr/data_online_dpnlg']
 
-    getMetadataAll(urls).then((metaDataList) => {
-      updateMessageData({
-        agent: 'bot',
-        type: 'url',
-        metaDataList,
-        urlText: '강의 바로가기'
-      })
+    // getMetadataAll(urls).then((metaDataList) => {
+    //   updateMessageData({
+    //     agent: 'bot',
+    //     type: 'url',
+    //     metaDataList,
+    //     urlText: '강의 바로가기'
+    //   })
 
-      setBotTyping(false);
-    })
+    //   setBotTyping(false);
+    // })
 
-    return
-  
-    axios.post('/chat', { questionId: questionId, text: text }, {
+    // return
+
+    const language = 'ko';
+
+    console.log({ text })
+    axios.post(`/chatbots/${chatbot_id}/chat/${language}`, { text }, {
       headers: {
         'Authorization': `Bearer ${session?.accessToken}`
       }
     })
       .then(({ data }) => {
+        console.log(data)
         switch (data.intend) {
-          case 'similar-question':
-            const similarQuestionId = data.response;
-            handleSimilarQuestionResponse(similarQuestionId);
-            break;
           default:
             const replyMessage = buildReplyMessage(data);
 
@@ -239,91 +247,37 @@ const ChatBot: React.FC<Props> = ({
       });
   };
   
-  const getMetadataAll = async (urls: string[]) => {
-    return Promise.all(urls?.map((url) => getMetadata(url)));
-  }
+  // const getMetadataAll = async (urls: string[]) => {
+  //   return Promise.all(urls?.map((url) => getMetadata(url)));
+  // }
 
-  const getMetadata = async (url: string) => {
-    // Fetch the HTML from the URL
-    const response = await fetch(url);
-    const html = await response.text();
+  // const getMetadata = async (url: string) => {
+  //   // Fetch the HTML from the URL
+  //   const response = await fetch(url);
+  //   const html = await response.text();
   
-    // Parse the HTML into a document
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+  //   // Parse the HTML into a document
+  //   const doc = new DOMParser().parseFromString(html, 'text/html');
   
-    // Extract the metadata
-    const metadata = {
-      url: url,
-      title: doc.querySelector('title')?.innerText ?? '',
-      description: doc.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
-      image: doc.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? '',
-      // ...extract other metadata as needed...
-    };
+  //   // Extract the metadata
+  //   const metadata = {
+  //     url: url,
+  //     title: doc.querySelector('title')?.innerText ?? '',
+  //     description: doc.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
+  //     image: doc.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? '',
+  //     // ...extract other metadata as needed...
+  //   };
   
-    return metadata;
-  }
+  //   return metadata;
+  // }
 
   const buildReplyMessage = (data: any) => {
-    let hintDenied = null;
-    const scenarioStart = scenario[0][0]
-    if (data.response?.includes('I can only provide 3 hints')) {
-      hintDenied = true;
-    } else {
-      hintDenied = false;
-    }
-
-    if (scenarioStart.options === undefined) return;
-
-    let sourceButtonMini = scenarioStart.options.slice(4, 5)[0];
-    if (scenarioStart.options[4].text === 'Give me the source for this passage') {
-      sourceButtonMini.text = 'Source for this passage';
-    }
-
-    const replyMessage = {
+    return {
       type: 'button',
       agent: 'bot',
-      text: data.intend !== 'unrelated' ? 
-        data.response.replaceAll(String.fromCharCode(10), "<br>") : MessageUnrelated,
-      reselectable: true,
-      options: data.intend !== 'hint' ? [
-          { action: 'postback', value: null, text: 'Give me a hint' },
-          { action: 'postback', value: null, text: 'Quiz me!' },
-          { action: 'postback', value: null, text: 'Try a similar example' },
-        ] : !hintDenied ? [
-          { action: 'postback', value: null, text: 'Want more hint?' },
-          { action: 'postback', value: null, text: 'Quiz me!' },
-          { action: 'postback', value: null, text: 'Try a similar example' },
-          { action: 'postback', value: null, text: 'Key vocabulary' },
-        ] : [
-          { action: 'postback', value: null, text: 'Quiz me!' },
-          { action: 'postback', value: null, text: 'Try a similar example' },
-          { action: 'postback', value: null, text: 'Key vocabulary' },
-          sourceButtonMini,
-        ]
+      text: data.text,
     };
-
-    return replyMessage;
   }
-
-
-  const handleSimilarQuestionResponse = (similarQuestionId: number) => {
-    let lastData = JSON.parse(JSON.stringify(messageDataRedux.at(-1)));
-    const idx = lastData.options.findIndex((option: MessageDataOption) => option.text === 'Try a similar example')
-
-    lastData.options[idx] = {
-      text: 'Try a similar example',
-      action: 'url',
-      value: `/question/id/${similarQuestionId}`,
-    }
-
-    if (storeMessage) {
-      dispatch(setMessageDataRedux([...messageDataRedux.slice(0, messageDataRedux.length - 1), lastData]));
-    } else {
-      setMessageData((prevData) => [...prevData.slice(0, prevData.length-2), lastData]);
-    }
-
-    return window.open(`/question/id/${similarQuestionId}`, '_blank');
-  };
 
   return (
     <div
