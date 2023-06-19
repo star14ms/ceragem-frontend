@@ -1,0 +1,73 @@
+.qkb-bot-ui--animate {
+  // FadeUp
+  .qkb-fadeUp-enter {
+    transform: translate(0, 20px);
+    opacity: 0;
+  }
+  .qkb-fadeUp-enter-active {
+    opacity: 1;
+    transform: translate(0, 0);
+    transition: opacity .15s linear, transform .2s ease-out;
+  }
+
+  .qkb-fadeUp-exit {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .qkb-fadeUp-exit-active {
+    transform: translate(0, 20px);
+    opacity: 0;
+    transition: opacity .15s linear, transform .2s ease-in;
+  }
+
+  // ScaleUp
+  .qkb-scaleUp-enter {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+  .qkb-scaleUp-enter-active {
+    opacity: 1;
+    transform: scale(1, 1);
+    transition: opacity .1s linear, transform .2s ease-out;
+  }
+
+  .qkb-scaleUp-exit {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+  .qkb-scaleUp-exit-active {
+    transform: scale(0, 0);
+    opacity: 0;
+    transition: opacity .1s linear, transform .2s ease-in;
+  }
+}
+
+
+// Typing indicator
+@keyframes qkbJump {
+  from {
+    transform: translateY(2px);
+  }
+  to {
+    transform: translateY(-1px);
+  }
+}
+
+$typing-duration: .35s;
+
+.qkb-msg-bubble__typing-indicator {
+  span,
+  &::before,
+  &::after {
+    transform: translateY(2px);
+    animation: qkbJump ease $typing-duration infinite alternate;
+  }
+
+  span {
+    animation-delay: calc($typing-duration / 2);
+  }
+
+  &::after {
+    animation-delay: $typing-duration;
+  }
+}
