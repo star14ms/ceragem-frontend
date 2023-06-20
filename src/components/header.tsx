@@ -4,6 +4,9 @@ import Image from 'next/image';
 import { useSession, signOut } from "next-auth/react"
 import styles from './header.module.scss';
 
+import SettingsModal from '@/components/settingsModal';
+
+
 export default function Header() {
   const { data: session } = useSession()
 
@@ -24,6 +27,10 @@ export default function Header() {
 
       <div className="navbar-menu">
         <div className="navbar-end is-size-6">
+          <a className="navbar-item">
+            <SettingsModal />
+          </a>
+
           {session && (
             <a className="navbar-item" onClick={() => signOut()}>
               Logout

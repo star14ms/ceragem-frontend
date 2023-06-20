@@ -7,8 +7,8 @@ import { useSession } from 'next-auth/react';
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
-import { setIsOpen, setMessageData as setMessageDataRedux, addMessageData, clearMessageData } from "@/store/slices/botSlice";
-import { selectBotisOpen, selectBotMessageData, selectBotId } from "@/store/slices/botSlice";
+import { setIsOpen, addMessageData, clearMessageData } from "@/store/slices/botSlice";
+import { selectBotisOpen, selectBotMessageData, selectBotId, selectBotConfig } from "@/store/slices/botSlice";
 import styles from './chatbot.module.scss';
 
 
@@ -51,6 +51,7 @@ const ChatBot: React.FC<Props> = ({
   const isOpenRedux = useSelector(selectBotisOpen);
   const messageDataRedux = useSelector(selectBotMessageData);
   const chatbot_id = useSelector(selectBotId);
+  const config = useSelector(selectBotConfig);
 
   let messageSound: HTMLAudioElement | null
 
@@ -129,15 +130,8 @@ const ChatBot: React.FC<Props> = ({
       return;
     }
 
-    if (scenario[_scenarioIndex][0].agent === 'bot') {
-      setBotTyping(true);
-    }
-
     for (let i = 0; i < scenario[_scenarioIndex].length; i++) {
-      if (scenario[_scenarioIndex][i].agent === 'bot') {
-        setBotTyping(true);
-      }
-      console.log(scenario[_scenarioIndex][i]);
+      setBotTyping(true);
 
       setTimeout(() => {
         const message = scenario[_scenarioIndex][i];
@@ -223,10 +217,8 @@ const ChatBot: React.FC<Props> = ({
 
     // return
 
-    const language = 'ko';
-
     console.log({ text })
-    axios.post(`/chatbots/${chatbot_id}/chat/${language}`, { text }, {
+    axios.post(`/chatbots/${chatbot_id}/chat/${config.language}`, { text }, {
       headers: {
         'Authorization': `Bearer ${session?.accessToken}`
       }

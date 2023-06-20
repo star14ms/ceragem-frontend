@@ -2,16 +2,20 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AppState } from "../store";
 import axios from '@/lib/api'
 import { MessageData } from "@/../react-chat-bot/src/shared/types/react-chat-bot";
-import { CreateChatbotForm } from "@/shared/types/bot";
+import { ChatbotConfig } from "@/shared/types/bot";
 
 
 export const createChatbot = createAsyncThunk(
   'bot/createChatbot',
-  async (payload: CreateChatbotForm, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     // const session: any = await getSession()
 
+    const state: AppState = getState() as AppState;
+    const currentConfig = state.bot.config;
+    console.log(currentConfig)
+
     try {
-      const response = await axios.post(`/chatbots`, payload, {
+      const response = await axios.post(`/chatbots`, currentConfig, {
         // headers: {
         //   Authorization: `Bearer ${session.accessToken}`
         // }
@@ -46,13 +50,19 @@ export interface BotState {
   isOpen: boolean;
   messageData: MessageData[];
   chatbot_id: string | undefined;
+  config: ChatbotConfig;
 }
 
 // Initial state
 const initialState: BotState = {
   isOpen: false,
-  messageData: [],
   chatbot_id: undefined,
+  config: {
+    language: 'ko',
+    style: 'polite',
+    temperature: 0.2,
+  },
+  messageData: [],
 };
 
 // Actual Slice
@@ -76,6 +86,10 @@ export const botSlice = createSlice({
     clearMessageData(state) {
       state.messageData = []
     },
+
+    setConfig(state, action) {
+      state.config = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(createChatbot.fulfilled, (state, action) => {
@@ -87,10 +101,11 @@ export const botSlice = createSlice({
   },
 });
 
-export const { setIsOpen, setMessageData, addMessageData, clearMessageData } = botSlice.actions;
+export const { setIsOpen, setMessageData, addMessageData, clearMessageData, setConfig } = botSlice.actions;
 
 export const selectBotisOpen = (state: AppState) => state.bot.isOpen;
 export const selectBotMessageData = (state: AppState) => state.bot.messageData;
 export const selectBotId = (state: AppState) => state.bot.chatbot_id;
+export const selectBotConfig = (state: AppState) => state.bot.config;
 
 export default botSlice.reducer;

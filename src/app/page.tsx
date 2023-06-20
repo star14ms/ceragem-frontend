@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import ChatBot from '@/components/chatbot';
 import { MessageData } from "@/../react-chat-bot/src/shared/types/react-chat-bot";
 import { useSession, signOut } from 'next-auth/react'
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectBotId, clearMessageData, createChatbot, deleteChatbot } from "@/store/slices/botSlice";
+import { selectBotId, setMessageData, createChatbot, selectBotConfig } from "@/store/slices/botSlice";
 
 import { CSSTransition } from 'react-transition-group';
 import styles from './page.module.scss';
@@ -26,6 +26,7 @@ export default function Index() {
 
   const dispatch = useDispatch();
   const chatbot_id = useSelector(selectBotId);
+  const config = useSelector(selectBotConfig);
 
   useEffect(() => {
     setAnimationTimeout();
@@ -37,40 +38,30 @@ export default function Index() {
 
   async function initChatbot() {
     console.log('create chatbot');
-    const { payload } = await dispatch(createChatbot({}));
+    const { payload } = await dispatch(createChatbot());
 
-    const language = 'ko';
     try {
-      const res = await axios.post(`/chatbots/${payload.chatbot_id}/chat/${language}`, {
-        text: '안녕',
+      const initText = '안녕'
+      const res = await axios.post(`/chatbots/${payload.chatbot_id}/chat/${config.language}`, {
+        text: initText,
       })
 
-      setScenario([[
+      dispatch(setMessageData([
         {
           agent: 'user',
           type: 'text',
-          text: '안녕! 넌 누구니?',
+          text: initText,
           disableInput: true,
         },
+      ]));
+
+      setScenario([[
         {
           agent: 'bot',
           type: 'text',
           text: res.data.text,
         }
       ]])
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async function handleInitChatbot() {
-    if (chatbot_id === undefined) return
-    
-    try {
-      dispatch(clearMessageData());
-      console.log('delete chatbot');
-      await dispatch(deleteChatbot(chatbot_id));
-      location.reload();
     } catch (e) {
       console.log(e);
     }
@@ -116,13 +107,11 @@ export default function Index() {
         style={{ display: transition.after_3500 && chatbot_id && scenario ? 'block' : 'none' }}
         isOpen={true}
         isDropMenu={false}
-        startMessageDelay={3500}
+        startMessageDelay={1500}
         scenario={scenario}
         storeMessage={true}
         onChange={handleChatBotEvent}
       />
-
-      <button className={`${styles.clearBtn} button is-danger`} onClick={handleInitChatbot}>Initialize Chatbot</button>
     </div>
   );
 };
