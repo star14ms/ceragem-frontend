@@ -1,43 +1,34 @@
-'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useSession, signOut } from "next-auth/react"
-import styles from './header.module.scss';
+"use client";
+import { Flex, Link, Spacer, Button, Text } from '@chakra-ui/react';
+import { useSession, signOut } from 'next-auth/react';
 
 import SettingsModal from '@/components/settingsModal';
+import Image from 'next/image';
 
 
 export default function Header() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   return (
-    <nav className={`${styles.navbar} navbar header has-background-white px-3`} role="navigation" aria-label="main navigation">
-      <div className="navbar-brand">
-        <Link href="/" className="navbar-item">
-          <Image src="/icons/pinata.png" alt="Pinata" width={32} height={28} />
-          <b className="ml-2">Ceragem</b>
-        </Link>
+    <Flex style={{ zIndex: 1000 }} as="nav" p={3} align="center" boxShadow="base">
 
-        {/* <div className="navbar-burger">
-          <span />
-          <span />
-          <span />
-        </div> */}
-      </div>
+      <Link href="/" display="flex" alignItems="center">
+        <Image src="/icons/pinata.png" alt="Pinata" width={32} height={32} />
+        <Text ml={2} fontWeight="bold">
+          Ceragem
+        </Text>
+      </Link>
 
-      <div className="navbar-menu">
-        <div className="navbar-end is-size-6">
-          <a className="navbar-item">
-            <SettingsModal />
-          </a>
+      <Spacer />
 
-          {session && (
-            <a className="navbar-item" onClick={() => signOut()}>
-              Logout
-            </a>
-          )}
-        </div>
-      </div>
-    </nav>
+      <Flex align="center">
+        <SettingsModal />
+        {session && (
+          <Button ml={4} onClick={() => signOut()}>
+            Logout
+          </Button>
+        )}
+      </Flex>
+    </Flex>
   );
 }

@@ -76,7 +76,7 @@
   background-color: #F3F4F6 !important;
 
   @media screen and (max-width: 1024px) {
-    $header-height: 52px;
+    $header-height: 67px;
     width: 100% !important;
     height: calc(100vh - ($header-height + 148px)) !important;
     height: calc(100vh - ($header-height + var(--bottop, 148px))) !important;

@@ -1,4 +1,7 @@
 .page {
+    position: relative;
+    top: 3px; // width of header shadow
+
     .title {
         margin-top: 225px;
     }
