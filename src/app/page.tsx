@@ -29,10 +29,11 @@ export default function Index() {
   const config = useSelector(selectBotConfig);
 
   useEffect(() => {
-    setAnimationTimeout();
-
     if (chatbot_id === undefined) {
+      setAnimationTimeout();
       initChatbot();
+    } else {
+      setTransition({ after_1000: true, after_2000: true, after_3500: true });
     }
   }, []);
 
@@ -99,7 +100,7 @@ export default function Index() {
           <h1>
             Welcome to Ceragem!
           </h1>
-          {/* <h2 className="mt-2"></h2> */}
+          <h2 className="mt-2"></h2>
         </div>
       </CSSTransition>
 

@@ -31,7 +31,6 @@ const ChatBot: React.FC<Props> = ({
   isDropMenu = true,
   startMessageDelay = 0,
   scenario = [],
-  questionId = null,
   clearButton = false,
   storeMessage = false,
   ratingEnable = false,

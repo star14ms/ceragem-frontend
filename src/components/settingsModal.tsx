@@ -13,12 +13,20 @@ const SettingsModal: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const config = useSelector(selectBotConfig);
   const [form, setForm] = useState<ChatbotConfig>(config);
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
   const chatbot_id = useSelector(selectBotId);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
+    const newForm = { ...form, [name]: value }
+    setForm(newForm);
+
+    if (newForm.language && newForm.style && newForm.temperature) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement | HTMLButtonElement>) => {
@@ -42,7 +50,7 @@ const SettingsModal: React.FC = () => {
   }
 
   const handleCancel = () => {
-    console.log(config)
+    setIsFormValid(true);
     setForm(config);
     onClose();
   };
@@ -90,7 +98,7 @@ const SettingsModal: React.FC = () => {
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+            <Button isDisabled={!isFormValid} colorScheme="blue" mr={3} onClick={handleSubmit}>
               New Chat
             </Button>
             <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
