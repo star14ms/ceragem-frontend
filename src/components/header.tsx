@@ -10,7 +10,7 @@ export default function Header({ toggleSidebar }: any) {
   const { data: session } = useSession();
 
   return (
-    <Flex style={{ zIndex: 1000 }} as="nav" p={3} align="center" boxShadow="base">
+    <Flex as="nav" p={3} align="center" boxShadow="base">
       <Button onClick={toggleSidebar}>
         <SvgComponent />
       </Button>

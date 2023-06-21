@@ -43,7 +43,7 @@ export default function Index() {
 
     if (chatbot_id === undefined) {
       initChatbot();
-    } else {
+    } else if (messageDataRedux.length === 0) {
       startChat();
     }
   }, []);
