@@ -4,19 +4,18 @@ import { Flex, Text, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box } 
 import { AddIcon } from '@chakra-ui/icons'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { selectBotId, clearMessageData, deleteChatbot, selectBotConfig, setConfig } from '@/store/slices/botSlice';
+import { selectBotConfig, setActiveBotId, createChatbot } from '@/store/slices/botSlice';
 
 import { ChatbotConfig } from "@/shared/types/bot";
+import { defaultConfig } from "@/store/slices/botSlice";
 
 
 const SettingsModal: React.FC = () => {
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const config = useSelector(selectBotConfig);
-  const [form, setForm] = useState<ChatbotConfig>(config);
+  const [form, setForm] = useState<ChatbotConfig>(defaultConfig);
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
-
-  const chatbot_id = useSelector(selectBotId);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -30,24 +29,12 @@ const SettingsModal: React.FC = () => {
     }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement | HTMLButtonElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement | HTMLButtonElement>) => {
     event.preventDefault();
-    dispatch(setConfig(form));
+    dispatch(setActiveBotId(undefined));
     onClose();
-    InitializeChatbot();
-  };
-
-  async function InitializeChatbot() {
-    if (chatbot_id === undefined) return
-
-    try {
-      dispatch(clearMessageData());
-      console.log('delete chatbot');
-      await dispatch(deleteChatbot(chatbot_id));
-      location.reload();
-      } catch (e) {
-      console.log(e);
-    }
+    await dispatch(createChatbot(form));
+    location.reload();
   }
 
   const handleCancel = () => {

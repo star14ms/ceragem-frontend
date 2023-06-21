@@ -3,8 +3,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Flex, Link, Spacer, Button, Text } from '@chakra-ui/react';
 import SvgComponent from './SVG';
 
-import Sidebar from '@/components/sidebar';
-import Image from 'next/image';
+// import Image from 'next/image';
 
 
 export default function Header({ toggleSidebar }: any) {

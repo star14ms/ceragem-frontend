@@ -8,7 +8,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectBotId, setMessageData, createChatbot, selectBotConfig } from "@/store/slices/botSlice";
+import { setActiveBotId, selectActiveBotId, setMessageData, createChatbot, selectBotMessageData, selectCurrentChat } from "@/store/slices/botSlice";
 
 import { CSSTransition } from 'react-transition-group';
 import styles from './page.module.scss';
@@ -25,29 +25,40 @@ export default function Index() {
     after_3500: false,
   });
   const [scenario, setScenario] = useState<MessageData[][]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [mainContentMargin, setMainContentMargin] = useState("0");
+  const [isOpen, setIsOpen] = useState(true);
+  const [mainContentMargin, setMainContentMargin] = useState("260px");
+  const [mainContentWidth, setMainContentWidth] = useState("calc(100% - 260px)");
 
   const dispatch = useDispatch();
-  const chatbot_id = useSelector(selectBotId);
-  const config = useSelector(selectBotConfig);
-
+  const chatbot_id = useSelector(selectActiveBotId);
+  const messageDataRedux = useSelector(selectBotMessageData);
+  const currentChat = useSelector(selectCurrentChat);
+  
   useEffect(() => {
-    if (chatbot_id === undefined) {
+    if (messageDataRedux.length === 0) {
       setAnimationTimeout();
-      initChatbot();
     } else {
       setTransition({ after_1000: true, after_2000: true, after_3500: true });
+    }
+
+    if (chatbot_id === undefined) {
+      initChatbot();
+    } else {
+      startChat();
     }
   }, []);
 
   async function initChatbot() {
     console.log('create chatbot');
     const { payload } = await dispatch(createChatbot());
+    dispatch(setActiveBotId(payload.chatbot_id))
+    await startChat();
+  }
 
+  async function startChat() {
     try {
       const initText = '안녕'
-      const res = await axios.post(`/chatbots/${payload.chatbot_id}/chat/${config.language}`, {
+      const res = await axios.post(`/chatbots/${currentChat.chatbot_id}/chat/${currentChat.config.language}`, {
         text: initText,
       })
 
@@ -99,14 +110,15 @@ export default function Index() {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
-    setMainContentMargin(isOpen ? "0" : "200px"); // toggle the margin of the main content
+    setMainContentMargin(isOpen ? "0" : "260px"); // toggle the margin of the main content
+    setMainContentWidth(isOpen ? "100%" : "calc(100% - 260px)"); // toggle the width of the main content
   };
 
   return (
     <>
     <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
-    <Box ml={mainContentMargin} transition="0.2s" className={`${styles.page} w-100 has-background-light2`}>
+    <Box ml={mainContentMargin} w={mainContentWidth} transition="0.2s" className={`${styles.page} has-background-light2`}>
       <CSSTransition in={transition.after_1000} classNames="slide-y-down" timeout={300} mountOnEnter>
         <div id="title" className={`${styles.title} ${transition.after_2000 ? styles.titleMoved : ''}`}>
           <h1>

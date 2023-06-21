@@ -8,7 +8,7 @@ import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
 import { setIsOpen, addMessageData, clearMessageData } from "@/store/slices/botSlice";
-import { selectBotisOpen, selectBotMessageData, selectBotId, selectBotConfig } from "@/store/slices/botSlice";
+import { selectBotisOpen, selectBotMessageData, selectActiveBotId, selectBotConfig } from "@/store/slices/botSlice";
 import styles from './chatbot.module.scss';
 
 
@@ -49,7 +49,7 @@ const ChatBot: React.FC<Props> = ({
   const dispatch = useDispatch();
   const isOpenRedux = useSelector(selectBotisOpen);
   const messageDataRedux = useSelector(selectBotMessageData);
-  const chatbot_id = useSelector(selectBotId);
+  const chatbot_id = useSelector(selectActiveBotId);
   const config = useSelector(selectBotConfig);
 
   let messageSound: HTMLAudioElement | null
@@ -178,7 +178,7 @@ const ChatBot: React.FC<Props> = ({
 
   const msgClear = () => {
     if (storeMessage) {
-      dispatch(clearMessageData())
+      dispatch(clearMessageData({}))
     } else {
       setMessageData([]);
     }

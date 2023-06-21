@@ -1,23 +1,48 @@
 "use client";
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Box, Text, Link, useColorModeValue, Image, Button, Slide, VStack, HStack } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons'
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import SettingsModal from './settingsModal';
 import SvgComponent from './SVG';
 
+import { useDispatch, useSelector } from "react-redux";
+import { selectChats, selectActiveBotId, setActiveBotId, clearMessageData, deleteChatbot } from '@/store/slices/botSlice';
+import { Chat } from '@/shared/types/bot';
+
 type NavItemProps = {
-  title: string;
   path: string;
+  chat: Chat;
 };
 
-const NavItem: React.FC<NavItemProps> = ({ title, path }) => {
+const NavItem: React.FC<NavItemProps> = ({ path, chat }) => {
   const pathname = usePathname();
   const isActive = pathname === path;
   const bg = useColorModeValue('gray.200', 'gray.700');
+  const dispatch = useDispatch();
+  const ActiveBotId = useSelector(selectActiveBotId);
+
+  const handleClick = () => {
+    console.log(chat.chatbot_id)
+    dispatch(setActiveBotId(chat.chatbot_id));
+  };
+
+  const handleDelete = async () => {
+    const isDeleteActieBot = ActiveBotId === chat.chatbot_id;
+
+    dispatch(clearMessageData({}));
+    console.log('delete chatbot');
+    await dispatch(deleteChatbot(chat.chatbot_id));
+
+    if (isDeleteActieBot) {
+      setActiveBotId(undefined);
+      location.reload();
+    }
+  };
 
   return (
-    <Box w="full" _hover={{ bg: 'gray.700' }}>
+    <Box w="full" _hover={{ bg: 'gray.700' }} onClick={handleClick}>
       <NextLink href={path} passHref>
         <Box
           px={4}
@@ -25,7 +50,23 @@ const NavItem: React.FC<NavItemProps> = ({ title, path }) => {
           rounded={'md'}
           bg={isActive ? bg : undefined}
         >
-          <Text textColor={isActive ? 'black' : "gray.200"} borderColor="white" w="full">{title}</Text>
+          <HStack textColor={isActive ? 'black' : "gray.200"} justifyContent="space-between">
+            <VStack align="start">
+              <Text>
+                language: {chat.config.language}
+              </Text>
+              <Text>
+                style: {chat.config.style}
+              </Text>
+              <Text>
+                temperature: {chat.config.temperature}
+              </Text>
+            </VStack>
+  
+            <Button size="sm" onClick={handleDelete}>
+              <DeleteIcon />
+            </Button>
+          </HStack>
         </Box>
       </NextLink>
     </Box>
@@ -35,6 +76,7 @@ const NavItem: React.FC<NavItemProps> = ({ title, path }) => {
 
 const Navigation = ({ isOpen, toggleSidebar }: any) => {
   const sidebarRef = useRef();
+  const chats = useSelector(selectChats);
 
   return (
     <Box>
@@ -42,7 +84,7 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
         <SvgComponent />
       </Button>
 
-      <Slide direction="left" in={isOpen} style={{ zIndex: 10 }}>
+      <Slide direction="left" in={isOpen} style={{ zIndex: 1 }}>
         <Box
           ref={sidebarRef.current}
           p="12px"
@@ -61,8 +103,9 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
               </Button>
             </HStack>
 
-            <NavItem title="Home" path="/" />
-            <NavItem title="About" path="/about" />
+            {chats.map((chat: any) => (
+              <NavItem key={chat.chatbot_id} path={`?${chat.chatbot_id}`} chat={chat} />
+            ))}
           </VStack>
         </Box>
       </Slide>
