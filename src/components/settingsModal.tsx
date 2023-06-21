@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Select } from '@chakra-ui/react';
 import { Flex, Text, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box } from "@chakra-ui/react";
+import { AddIcon } from '@chakra-ui/icons'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { selectBotId, clearMessageData, deleteChatbot, selectBotConfig, setConfig } from '@/store/slices/botSlice';
@@ -57,11 +58,15 @@ const SettingsModal: React.FC = () => {
 
   return (
     <div>
-      <Button colorScheme="blue" onClick={onOpen}>New Chat</Button>
+      <Button w="44" justifyContent={'start'} colorScheme="blackAlpha" onClick={onOpen}>
+        <AddIcon mr={3} />
+        New Chat
+      </Button>
+      
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Settings</ModalHeader>
+          <ModalHeader>New Chat</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={handleSubmit}>
@@ -99,7 +104,7 @@ const SettingsModal: React.FC = () => {
           </ModalBody>
           <ModalFooter>
             <Button isDisabled={!isFormValid} colorScheme="blue" mr={3} onClick={handleSubmit}>
-              New Chat
+              Apply
             </Button>
             <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
           </ModalFooter>

@@ -26,6 +26,17 @@
   }
 }
 
+
+#chatbot.not-drop-menu {
+  position: relative !important;
+
+  .qkb-bot-ui {
+    position: inherit !important;
+    right: unset !important;
+    bottom: unset !important;
+  }
+}
+
 .qkb-board {
   @media screen and (max-width: 440px), screen and (max-height: 690px) {
     height: 100vh !important;
@@ -63,25 +74,23 @@
   }
 }
 #chatbot.not-drop-menu .qkb-board {
-  width: 1024px !important;
+  position: absolute;
+  width: 100% !important;
+  max-width: 1024px;
   height: calc(100vh - ($header-height + 148px)) !important;
   height: calc(100vh - ($header-height + var(--bottop, 148px))) !important;
 
-  position: fixed;
-  top: calc($header-height + 148px);
-  top: calc($header-height + var(--bottop, 148px)) !important;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0px;
+  right: 50%;
+  transform: translateX(50%);
+
   box-shadow: none;
   background-color: #F3F4F6 !important;
 
   @media screen and (max-width: 1024px) {
     $header-height: 67px;
-    width: 100% !important;
     height: calc(100vh - ($header-height + 148px)) !important;
     height: calc(100vh - ($header-height + var(--bottop, 148px))) !important;
-    top: calc($header-height + 148px);
-    top: calc($header-height + var(--bottop, 148px)) !important;
   }
 
   .qkb-board-header {

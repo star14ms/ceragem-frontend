@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 // import Image from 'next/image';
 import ChatBot from '@/components/chatbot';
+import Sidebar from '@/components/sidebar';
 import { MessageData } from "@/../react-chat-bot/src/shared/types/react-chat-bot";
 import { useSession, signOut } from 'next-auth/react'
 import { useAxios } from '@/lib/api'
@@ -11,6 +12,7 @@ import { selectBotId, setMessageData, createChatbot, selectBotConfig } from "@/s
 
 import { CSSTransition } from 'react-transition-group';
 import styles from './page.module.scss';
+import { Box } from '@chakra-ui/react';
 
 
 export default function Index() {
@@ -23,6 +25,8 @@ export default function Index() {
     after_3500: false,
   });
   const [scenario, setScenario] = useState<MessageData[][]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mainContentMargin, setMainContentMargin] = useState("0");
 
   const dispatch = useDispatch();
   const chatbot_id = useSelector(selectBotId);
@@ -93,8 +97,16 @@ export default function Index() {
   function handleChatBotEvent(emit: string, data: any) {
   }
 
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+    setMainContentMargin(isOpen ? "0" : "200px"); // toggle the margin of the main content
+  };
+
   return (
-    <div className={`${styles.page} has-background-light2`}>
+    <>
+    <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+
+    <Box ml={mainContentMargin} transition="0.2s" className={`${styles.page} w-100 has-background-light2`}>
       <CSSTransition in={transition.after_1000} classNames="slide-y-down" timeout={300} mountOnEnter>
         <div id="title" className={`${styles.title} ${transition.after_2000 ? styles.titleMoved : ''}`}>
           <h1>
@@ -113,6 +125,7 @@ export default function Index() {
         storeMessage={true}
         onChange={handleChatBotEvent}
       />
-    </div>
+    </Box>
+    </>
   );
 };
