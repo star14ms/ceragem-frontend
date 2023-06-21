@@ -1,14 +1,14 @@
 "use client";
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { Box, Text, Link, useColorModeValue, Image, Button, Slide, VStack, HStack } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons'
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import SettingsModal from './settingsModal';
 import SvgComponent from './SVG';
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectChats, selectActiveBotId, setActiveBotId, clearMessageData, deleteChatbot } from '@/store/slices/botSlice';
+import { selectChats, selectActiveBotId, setActiveBotId, deleteChatbot, createChatbot } from '@/store/slices/botSlice';
 import { Chat } from '@/shared/types/bot';
 
 type NavItemProps = {
@@ -17,32 +17,44 @@ type NavItemProps = {
 };
 
 const NavItem: React.FC<NavItemProps> = ({ path, chat }) => {
+  const router = useRouter();
   const pathname = usePathname();
   const isActive = pathname === path;
   const bg = useColorModeValue('gray.200', 'gray.700');
   const dispatch = useDispatch();
-  const ActiveBotId = useSelector(selectActiveBotId);
+  const activeBotId = useSelector(selectActiveBotId);
+  const chats = useSelector(selectChats);
 
   const handleClick = () => {
-    console.log(chat.chatbot_id)
     dispatch(setActiveBotId(chat.chatbot_id));
   };
 
-  const handleDelete = async () => {
-    const isDeleteActieBot = ActiveBotId === chat.chatbot_id;
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    dispatch(clearMessageData({}));
+    const isDeleteActieBot = activeBotId === chat.chatbot_id;
+
+    if (isDeleteActieBot && chats.length > 1) {
+      const index = chats.findIndex((_chat: Chat) => _chat.chatbot_id == activeBotId);
+      const anotherChat = index === 0 ? chats[1] : chats[index - 1];
+      dispatch(setActiveBotId(anotherChat.chatbot_id));
+      router.push(`?${anotherChat.chatbot_id}`);
+    }
+
     console.log('delete chatbot');
     await dispatch(deleteChatbot(chat.chatbot_id));
 
-    if (isDeleteActieBot) {
-      setActiveBotId(undefined);
+    if (isDeleteActieBot && chats.length === 1) {
+      console.log('create chatbot');
+      const { payload } = await dispatch(createChatbot());
+      dispatch(setActiveBotId(payload.chatbot_id))
       location.reload();
     }
   };
 
   return (
-    <Box w="full" _hover={{ bg: 'gray.700' }} onClick={handleClick}>
+    <Box title={chat.chatbot_id} w="full" _hover={{ bg: 'gray.700' }} onClick={handleClick}>
       <NextLink href={path} passHref>
         <Box
           px={4}

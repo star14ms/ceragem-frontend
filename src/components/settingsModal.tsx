@@ -31,9 +31,9 @@ const SettingsModal: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement | HTMLButtonElement>) => {
     event.preventDefault();
-    dispatch(setActiveBotId(undefined));
     onClose();
-    await dispatch(createChatbot(form));
+    const { payload } = await dispatch(createChatbot(form));
+    dispatch(setActiveBotId(payload.chatbot_id))
     location.reload();
   }
 
