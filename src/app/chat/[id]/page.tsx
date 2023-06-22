@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import ChatBot from '@/components/chatbot';
 import Sidebar from '@/components/sidebar';
 import { MessageData } from "@/../react-chat-bot/src/shared/types/react-chat-bot";
-import { useSession, signOut } from 'next-auth/react'
+// import { useSession, signOut } from 'next-auth/react'
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
@@ -16,8 +16,9 @@ import { Box } from '@chakra-ui/react';
 
 
 export default function Index() {
-  const { data: session }: any = useSession()
-  const axios = useAxios(session?.accessToken);
+  // const { data: session }: any = useSession()
+  // const axios = useAxios(session?.accessToken);
+  const axios = useAxios();
 
   const [transition, setTransition] = useState({
     after_1000: false,

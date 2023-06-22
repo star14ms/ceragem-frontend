@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 // import ReactChatBot, { MessageData, MessageDataOption } from 'react-chat-bot';
 import ReactChatBot, { MessageData, MessageDataOption } from '@/../react-chat-bot/src/react-chat-bot';
-import { useSession } from 'next-auth/react';
+// import { useSession } from 'next-auth/react';
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
@@ -36,8 +36,9 @@ const ChatBot: React.FC<Props> = ({
   ratingEnable = false,
   onChange = () => {},
 }) => {
-  const { data: session }: any = useSession()
-  const axios = useAxios(session?.accessToken);
+  // const { data: session }: any = useSession()
+  // const axios = useAxios(session?.accessToken);
+  const axios = useAxios();
   const router = useRouter();
   const isMountedRef = useRef(false);
 
@@ -218,9 +219,9 @@ const ChatBot: React.FC<Props> = ({
 
     console.log({ text })
     axios.post(`/chatbots/${chatbot_id}/chat/${config.language}`, { text }, {
-      headers: {
-        'Authorization': `Bearer ${session?.accessToken}`
-      }
+      // headers: {
+      //   'Authorization': `Bearer ${session?.accessToken}`
+      // }
     })
       .then(({ data }) => {
         console.log(data)

@@ -1,5 +1,5 @@
 "use client";
-import { useSession, signOut } from 'next-auth/react';
+// import { useSession, signOut } from 'next-auth/react';
 import { Flex, Link, Spacer, Button, Text } from '@chakra-ui/react';
 import { SvgSidebar } from './SVG';
 
@@ -7,7 +7,7 @@ import { SvgSidebar } from './SVG';
 
 
 export default function Header({ toggleSidebar }: any) {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   return (
     <Flex as="nav" p={3} align="center" boxShadow="base">
@@ -24,13 +24,13 @@ export default function Header({ toggleSidebar }: any) {
 
       <Spacer />
 
-      <Flex align="center">
+      {/* <Flex align="center">
         {session && (
           <Button ml={4} onClick={() => signOut()}>
             Logout
           </Button>
         )}
-      </Flex>
+      </Flex> */}
     </Flex>
   );
 }

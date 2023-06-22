@@ -55,11 +55,11 @@ export default function Providers({ children }: PropsWithChildren) {
   return (
     <Provider store={store}>
       <PersistGate persistor={store.__persistor} loading={null}>
-        <SessionProvider>
+        {/* <SessionProvider> */}
           <InnerLayout>
             { children }
           </InnerLayout>
-        </SessionProvider>
+        {/* </SessionProvider> */}
       </PersistGate>
     </Provider>
   );
