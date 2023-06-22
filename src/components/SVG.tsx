@@ -1,5 +1,5 @@
 
-const SvgComponent = (props: object) => (
+const SvgSidebar = (props: object) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
@@ -17,5 +17,5 @@ const SvgComponent = (props: object) => (
     <path fill="fff" d="M9 3v18" />
   </svg>
 )
-export default SvgComponent
-  
+
+export { SvgSidebar }

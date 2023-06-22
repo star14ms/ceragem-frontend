@@ -5,7 +5,7 @@ import { DeleteIcon } from '@chakra-ui/icons'
 import { useRouter, usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import SettingsModal from './settingsModal';
-import SvgComponent from './SVG';
+import { SvgSidebar } from './SVG';
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectChats, selectActiveBotId, setActiveBotId, deleteChatbot, createChatbot } from '@/store/slices/botSlice';
@@ -93,7 +93,7 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
   return (
     <Box>
       <Button position="absolute" top="12px" left="12px" onClick={toggleSidebar}>
-        <SvgComponent />
+        <SvgSidebar />
       </Button>
 
       <Slide direction="left" in={isOpen} style={{ zIndex: 1 }}>
@@ -111,7 +111,7 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
               <SettingsModal />
               
               <Button colorScheme="blackAlpha" onClick={toggleSidebar}>
-                <SvgComponent />
+                <SvgSidebar />
               </Button>
             </HStack>
 

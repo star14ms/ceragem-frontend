@@ -1,7 +1,7 @@
 "use client";
 import { useSession, signOut } from 'next-auth/react';
 import { Flex, Link, Spacer, Button, Text } from '@chakra-ui/react';
-import SvgComponent from './SVG';
+import { SvgSidebar } from './SVG';
 
 // import Image from 'next/image';
 
@@ -12,7 +12,7 @@ export default function Header({ toggleSidebar }: any) {
   return (
     <Flex as="nav" p={3} align="center" boxShadow="base">
       <Button onClick={toggleSidebar}>
-        <SvgComponent />
+        <SvgSidebar />
       </Button>
       
       {/* <Link href="/" display="flex" alignItems="center">
