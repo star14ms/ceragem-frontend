@@ -351,6 +351,16 @@
       color: #9CA3AF !important;
     }
   }
+
+  .qkb-action-item--send {
+    transform: scale(1.5);
+    position: relative;
+    right: -14px;
+    background-color: #3B82F6;
+    border: 1px inset #93C5FD;
+    border-radius: 6px;
+    padding: 0 0.5rem;
+  }
 }
 
 
