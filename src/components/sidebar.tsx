@@ -18,12 +18,11 @@ type NavItemProps = {
 
 const NavItem: React.FC<NavItemProps> = ({ path, chat }) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const isActive = pathname === path;
   const bg = useColorModeValue('gray.200', 'gray.700');
   const dispatch = useDispatch();
   const activeBotId = useSelector(selectActiveBotId);
   const chats = useSelector(selectChats);
+  const isActive = chat.chatbot_id === activeBotId;
 
   const handleClick = () => {
     dispatch(setActiveBotId(chat.chatbot_id));
@@ -34,23 +33,25 @@ const NavItem: React.FC<NavItemProps> = ({ path, chat }) => {
     e.stopPropagation();
 
     const isDeleteActieBot = activeBotId === chat.chatbot_id;
+    let newbotId = activeBotId;
 
     if (isDeleteActieBot && chats.length > 1) {
       const index = chats.findIndex((_chat: Chat) => _chat.chatbot_id == activeBotId);
       const anotherChat = index === 0 ? chats[1] : chats[index - 1];
-      dispatch(setActiveBotId(anotherChat.chatbot_id));
-      router.push(`?${anotherChat.chatbot_id}`);
-    }
+      newbotId = anotherChat.chatbot_id
+    } 
 
     console.log('delete chatbot');
     await dispatch(deleteChatbot(chat.chatbot_id));
 
-    if (isDeleteActieBot && chats.length === 1) {
+    if (chats.length === 1) {
       console.log('create chatbot');
       const { payload } = await dispatch(createChatbot());
-      dispatch(setActiveBotId(payload.chatbot_id))
-      location.reload();
+      newbotId = payload.chatbot_id;
     }
+
+    dispatch(setActiveBotId(newbotId));
+    router.push(`/chat/${newbotId}`);
   };
 
   return (
@@ -116,7 +117,7 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
             </HStack>
 
             {chats.map((chat: any) => (
-              <NavItem key={chat.chatbot_id} path={`?${chat.chatbot_id}`} chat={chat} />
+              <NavItem key={chat.chatbot_id} path={`/chat/${chat.chatbot_id}`} chat={chat} />
             ))}
           </VStack>
         </Box>

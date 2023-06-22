@@ -1,4 +1,6 @@
+"use client";
 import { useState, ChangeEvent, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Select } from '@chakra-ui/react';
 import { Flex, Text, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box } from "@chakra-ui/react";
 import { AddIcon } from '@chakra-ui/icons'
@@ -11,6 +13,7 @@ import { defaultConfig } from "@/store/slices/botSlice";
 
 
 const SettingsModal: React.FC = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const config = useSelector(selectBotConfig);
@@ -34,7 +37,7 @@ const SettingsModal: React.FC = () => {
     onClose();
     const { payload } = await dispatch(createChatbot(form));
     dispatch(setActiveBotId(payload.chatbot_id))
-    location.reload();
+    router.push(`/chat/${payload.chatbot_id}`);
   }
 
   const handleCancel = () => {
