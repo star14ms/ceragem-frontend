@@ -4,8 +4,7 @@ import { selectActiveBotId } from "@/store/slices/botSlice";
 import { redirect } from 'next/navigation';
 
 export default function Index() {
-  // const chatbot_id = useSelector(selectActiveBotId);
-  const chatbot_id = undefined
+  const chatbot_id = useSelector(selectActiveBotId);
 
   return redirect(`/chat/${chatbot_id}`);
 };

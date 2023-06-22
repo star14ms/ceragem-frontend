@@ -6,6 +6,7 @@ import Sidebar from '@/components/sidebar';
 import { MessageData } from "@/../react-chat-bot/src/shared/types/react-chat-bot";
 // import { useSession, signOut } from 'next-auth/react'
 import { useAxios } from '@/lib/api'
+import { useRouter } from 'next/navigation';
 
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveBotId, selectActiveBotId, setMessageData, createChatbot, selectBotMessageData, selectCurrentChat } from "@/store/slices/botSlice";
@@ -19,6 +20,7 @@ export default function Index() {
   // const { data: session }: any = useSession()
   // const axios = useAxios(session?.accessToken);
   const axios = useAxios();
+  const router = useRouter();
 
   const [transition, setTransition] = useState({
     after_1000: false,
@@ -53,10 +55,12 @@ export default function Index() {
     console.log('create chatbot');
     const { payload } = await dispatch(createChatbot());
     dispatch(setActiveBotId(payload.chatbot_id))
-    await startChat();
+    router.push(`/chat/${payload.chatbot_id}`);
   }
 
   async function startChat() {
+    if (currentChat === undefined) return;
+
     try {
       const initText = '안녕'
       const res = await axios.post(`/chatbots/${currentChat.chatbot_id}/chat/${currentChat.config.language}`, {

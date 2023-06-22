@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { Box, Text, Link, useColorModeValue, Image, Button, Slide, VStack, HStack } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons'
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
 import SettingsModal from './settingsModal';
 import { SvgSidebar } from './SVG';

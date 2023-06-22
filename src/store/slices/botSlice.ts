@@ -80,7 +80,6 @@ export const botSlice = createSlice({
     },
 
     setActiveBotId(state, action) {
-      console.log('setActiveBotId', action.payload)
       state.activeBotId = action.payload;
     },
 

@@ -11,9 +11,6 @@ import { inter } from '@/styles/fonts';
 export const metadata: Metadata = {
   title: 'Ceragem',
   description: 'Ceragem',
-  openGraph: {
-    images: '/favicon.ico',
-  },
 }
 
 export default function RootLayout({
