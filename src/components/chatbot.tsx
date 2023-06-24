@@ -267,7 +267,14 @@ const ChatBot: React.FC<Props> = ({
     return {
       type: 'button',
       agent: 'bot',
-      text: data.text,
+      text: data.text.replaceAll(String.fromCharCode(10), "<br>").replaceAll('   ', "&emsp;"),
+      options: data.context.length > 0 ? [
+        ...data.context.map((item: any) => ({
+          text: `page ${item.page}`,
+          value: '/source/' + item.source + '#page=' + item.page,
+          action: 'url',
+        })),
+      ] : undefined
     };
   }
 
