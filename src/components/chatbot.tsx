@@ -7,7 +7,7 @@ import ReactChatBot, { MessageData, MessageDataOption } from '@/../react-chat-bo
 import { useAxios } from '@/lib/api'
 
 import { useDispatch, useSelector } from "react-redux";
-import { setIsOpen, addMessageData, clearMessageData } from "@/store/slices/botSlice";
+import { setIsOpen, addMessageData, clearMessageData, setMessageData } from "@/store/slices/botSlice";
 import { selectBotisOpen, selectBotMessageData, selectActiveBotId, selectBotConfig } from "@/store/slices/botSlice";
 import styles from './chatbot.module.scss';
 
@@ -45,6 +45,7 @@ const ChatBot: React.FC<Props> = ({
   const isMountedRef = useRef(false);
 
   const [messageData, setMessageData] = useState<Array<MessageData>>([]);
+  const [messageTyping, setMessageTyping] = useState<string>('');
   const [botTyping, setBotTyping] = useState(false);
   const [inputDisable, setInputDisable] = useState<boolean>(scenario.length === 0 ? false : true);
   const [scenarioIndex, setScenarioIndex] = useState(0);
@@ -111,6 +112,12 @@ const ChatBot: React.FC<Props> = ({
     }
   }, [scenario]);
 
+  useEffect(() => {
+    if (messageTyping) {
+      setBotTyping(false);
+    }
+  }, [messageTyping]);
+
   const startScenario = () => {
     if (scenario.length > 0) {
       setTimeout(() => {
@@ -175,7 +182,7 @@ const ChatBot: React.FC<Props> = ({
     if (scenarioIndex <= scenario.length - 1) {
       nextScenario();
     } else {
-      getResponse(text);
+      getResponseStream(text); // getResponse(text); or getResponseStream(text);
     }
   };
 
@@ -240,6 +247,49 @@ const ChatBot: React.FC<Props> = ({
         setBotTyping(false);
       });
   };
+
+  const getResponseStream = (text: any) => {
+    // Loading
+    setBotTyping(true);
+
+    console.log({ text })
+    let replyText = ''
+
+    fetch(process.env.NEXT_PUBLIC_API_URL + `/chatbots/${chatbot_id}/chat-stream/${config.language}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text })
+    })
+    .then(res => {
+      let reader = res.body?.getReader();
+      if (!reader) throw new Error("No reader");
+
+      let decoder = new TextDecoder('utf8');
+
+      function processStream(result: ReadableStreamReadResult<Uint8Array>): any {
+        if (result.done) {
+          setMessageTyping('');
+          updateMessageData({
+            agent: 'bot',
+            type: 'text',
+            text: replyText,
+          });
+          return;
+        }
+
+        replyText += decoder.decode(result.value!);
+        setMessageTyping(replyText);
+
+        return reader!.read().then(processStream);
+      }
+      return reader!.read().then(processStream);
+    })
+    .catch(e => {
+      console.error("Error in fetching: ", e);
+    });
+  };
   
   // const getMetadataAll = async (urls: string[]) => {
   //   return Promise.all(urls?.map((url) => getMetadata(url)));
@@ -289,6 +339,7 @@ const ChatBot: React.FC<Props> = ({
       <ReactChatBot
         options={botOptions}
         messages={storeMessage ? messageDataRedux : messageData}
+        messageTyping={messageTyping}
         botTyping={botTyping}
         inputDisable={inputDisable || botTyping}
         isOpen={isOpen}

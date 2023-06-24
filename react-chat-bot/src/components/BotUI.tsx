@@ -12,6 +12,7 @@ import { CSSTransition } from 'react-transition-group';
 type Props = {
   options?: Record<string, unknown>;
   messages?: Array<any>;
+  messageTyping?: string;
   botTyping?: boolean;
   inputDisable?: boolean;
   isOpen?: boolean;
@@ -29,6 +30,7 @@ type Props = {
 const BotUI: React.FC<Props> = ({
   options = {},
   messages = [],
+  messageTyping = undefined,
   botTyping = false,
   inputDisable = false,
   isOpen = false,
@@ -146,6 +148,7 @@ const BotUI: React.FC<Props> = ({
             <BoardContent
               botTyping={botTyping}
               mainData={messages}
+              messageTyping={messageTyping}
               showUserIcon={optionsMain.userAvatarImg !== null}
               ratingEnable={ratingEnable}
             />

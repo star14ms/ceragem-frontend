@@ -5,6 +5,7 @@ import { MessageData } from '../../shared/types/react-chat-bot';
 
 type Props = {
   mainData: Array<MessageData>;
+  messageTyping?: string;
   botTyping?: boolean;
   botTypingChildren?: React.ReactNode;
   showUserIcon?: boolean;
@@ -13,6 +14,7 @@ type Props = {
 
 const BoardContent: React.FC<Props> = ({
   mainData,
+  messageTyping = undefined,
   botTyping = false,
   botTypingChildren = null,
   showUserIcon = false,
@@ -41,6 +43,14 @@ const BoardContent: React.FC<Props> = ({
             ratingEnable={ratingEnable}
           />
         ))}
+        {messageTyping ? (
+          <MessageBubble
+            key={mainData.length}
+            message={{ agent: 'bot', type: 'text', text: messageTyping} as MessageData}
+            showUserIcon={showUserIcon}
+            ratingEnable={ratingEnable}
+          />
+        ) : <></>}
         {botTyping ? (
           (!botTypingChildren) ? (
             <MessageTyping />
