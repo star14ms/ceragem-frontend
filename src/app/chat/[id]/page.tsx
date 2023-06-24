@@ -22,11 +22,6 @@ export default function Index() {
   const axios = useAxios();
   const router = useRouter();
 
-  const [transition, setTransition] = useState({
-    after_1000: false,
-    after_2000: false,
-    after_3500: false,
-  });
   const [scenario, setScenario] = useState<MessageData[][]>([]);
   const [isOpen, setIsOpen] = useState(true);
   const [mainContentMargin, setMainContentMargin] = useState("260px");
@@ -36,12 +31,17 @@ export default function Index() {
   const chatbot_id = useSelector(selectActiveBotId);
   const messageDataRedux = useSelector(selectBotMessageData);
   const currentChat = useSelector(selectCurrentChat);
+
+  const isMessageDataEmpty = messageDataRedux.length === 0
+  const [transition, setTransition] = useState({
+    after_1000: !isMessageDataEmpty,
+    after_2000: !isMessageDataEmpty,
+    after_3500: !isMessageDataEmpty,
+  });
   
   useEffect(() => {
     if (messageDataRedux.length === 0) {
       setAnimationTimeout();
-    } else {
-      setTransition({ after_1000: true, after_2000: true, after_3500: true });
     }
 
     if (chatbot_id === undefined) {
@@ -56,6 +56,12 @@ export default function Index() {
     const { payload } = await dispatch(createChatbot());
     dispatch(setActiveBotId(payload.chatbot_id))
     router.push(`/chat/${payload.chatbot_id}`);
+  }
+
+  function chatbotOnReady() {
+    if (messageDataRedux.length > 1) {
+      moveTitle();
+    }
   }
 
   async function startChat() {
@@ -141,6 +147,7 @@ export default function Index() {
         scenario={scenario}
         storeMessage={true}
         onChange={handleChatBotEvent}
+        onOpen={chatbotOnReady}
       />
     </Box>
     </>

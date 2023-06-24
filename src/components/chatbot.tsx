@@ -23,6 +23,7 @@ type Props = {
   storeMessage?: boolean;
   ratingEnable?: boolean;
   onChange?: (emit: string, value: any) => void;
+  onOpen?: () => void;
 };
 
 const ChatBot: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const ChatBot: React.FC<Props> = ({
   storeMessage = false,
   ratingEnable = false,
   onChange = () => {},
+  onOpen = () => {},
 }) => {
   // const { data: session }: any = useSession()
   // const axios = useAxios(session?.accessToken);
@@ -294,7 +296,7 @@ const ChatBot: React.FC<Props> = ({
         ratingEnable={ratingEnable}
         onMsgSend={msgSend}
         onMsgClear={msgClear}
-        onOpen={() => changeOpenState(true)}
+        onOpen={() => { changeOpenState(true); onOpen() }}
         onDestroy={() => changeOpenState(false)}
         header={
           <div slot="header" className="is-flex">
