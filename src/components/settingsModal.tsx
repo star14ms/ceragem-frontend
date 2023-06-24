@@ -48,7 +48,7 @@ const SettingsModal: React.FC = () => {
 
   return (
     <div>
-      <Button w="44" justifyContent={'start'} colorScheme="blackAlpha" onClick={onOpen}>
+      <Button w="44" justifyContent="start" colorScheme="blackAlpha" onClick={onOpen}>
         <AddIcon mr={3} />
         New Chat
       </Button>

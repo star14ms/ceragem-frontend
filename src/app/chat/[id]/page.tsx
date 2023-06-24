@@ -24,8 +24,11 @@ export default function Index() {
 
   const [scenario, setScenario] = useState<MessageData[][]>([]);
   const [isOpen, setIsOpen] = useState(true);
-  const [mainContentMargin, setMainContentMargin] = useState("260px");
-  const [mainContentWidth, setMainContentWidth] = useState("calc(100% - 260px)");
+  const sidebarWidthDefault = '260px'
+  const sideMarginDefault = `calc(100% - ${sidebarWidthDefault})`
+  const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 1024 ? '100vw' : sidebarWidthDefault)
+  const [mainContentMargin, setMainContentMargin] = useState(sidebarWidth);
+  const [mainContentWidth, setMainContentWidth] = useState(sideMarginDefault);
 
   const dispatch = useDispatch();
   const chatbot_id = useSelector(selectActiveBotId);
@@ -38,7 +41,23 @@ export default function Index() {
     after_2000: !isMessageDataEmpty,
     after_3500: !isMessageDataEmpty,
   });
-  
+
+  useEffect(() => {
+    function handleResize() {
+      let sidebarWidthNew = window.innerWidth < 1024 ? '100vw' : sidebarWidthDefault
+
+      setSidebarWidth(sidebarWidthNew)
+      updateMainContainerDesign(isOpen, sidebarWidthNew)
+    }
+
+    window.addEventListener("resize", handleResize);
+    handleResize()
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (messageDataRedux.length === 0) {
       setAnimationTimeout();
@@ -119,17 +138,23 @@ export default function Index() {
   function handleChatBotEvent(emit: string, data: any) {
   }
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-    setMainContentMargin(isOpen ? "0" : "260px"); // toggle the margin of the main content
-    setMainContentWidth(isOpen ? "100%" : "calc(100% - 260px)"); // toggle the width of the main content
+  function toggleSidebar() {
+    const isOpenNew = !isOpen
+    setIsOpen(isOpenNew);
+    updateMainContainerDesign(isOpenNew, sidebarWidth)
+
   };
+
+  function updateMainContainerDesign(isOpenNew: boolean, sidebarWidthNew: string) {
+    setMainContentMargin(isOpenNew && sidebarWidthNew === sidebarWidthDefault ? sidebarWidthDefault : "0");
+    setMainContentWidth(isOpenNew && sidebarWidthNew === sidebarWidthDefault ? sideMarginDefault : '100%');
+  }
 
   return (
     <>
-    <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+    <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} sidebarWidth={sidebarWidth} />
 
-    <Box ml={mainContentMargin} w={mainContentWidth} transition="0.2s" className={`${styles.page} has-background-light2`}>
+    <Box ml={mainContentMargin} w={mainContentWidth} transition="0.2" className={`${styles.page} has-background-light2`}>
       <CSSTransition in={transition.after_1000} classNames="slide-y-down" timeout={300} mountOnEnter>
         <div id="title" className={`${styles.title} ${transition.after_2000 ? styles.titleMoved : ''}`}>
           <h1>

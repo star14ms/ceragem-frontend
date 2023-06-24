@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Text, Link, useColorModeValue, Image, Button, Slide, VStack, HStack } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/navigation';
@@ -87,7 +87,7 @@ const NavItem: React.FC<NavItemProps> = ({ path, chat }) => {
 };
 
 
-const Navigation = ({ isOpen, toggleSidebar }: any) => {
+const Navigation = ({ isOpen, toggleSidebar, sidebarWidth }: any) => {
   const sidebarRef = useRef();
   const chats = useSelector(selectChats);
 
@@ -97,13 +97,13 @@ const Navigation = ({ isOpen, toggleSidebar }: any) => {
         <SvgSidebar />
       </Button>
 
-      <Slide direction="left" in={isOpen} style={{ zIndex: 1 }}>
+      <Slide direction="left" in={isOpen} style={{ zIndex: 11 }}>
         <Box
           ref={sidebarRef.current}
           p="12px"
           color="white"
           bg="rgba(32, 33, 35, 1)"
-          w="260px"
+          w={sidebarWidth}
           h="full"
           position="fixed"
         >
